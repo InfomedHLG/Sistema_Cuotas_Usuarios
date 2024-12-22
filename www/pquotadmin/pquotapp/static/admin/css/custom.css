@@ -1,0 +1,80 @@
+/* Estilos para inputs flotantes */
+.floating-input {
+    position: relative !important;
+    margin-bottom: 1rem !important;
+}
+
+.floating-input-field {
+    width: 100% !important;
+    height: 3rem !important;
+    padding: 1.5rem 1rem 0.5rem !important;
+    font-size: 0.875rem !important;
+    border-radius: 0.5rem !important;
+    border: 2px solid hsl(var(--b3)) !important;
+    background-color: hsl(var(--b1)) !important;
+    transition: all 0.3s !important;
+    appearance: none !important;
+}
+
+.floating-input-field:focus {
+    border-color: hsl(var(--a)) !important;
+    box-shadow: 0 0 0 4px hsla(var(--a) / 0.2) !important;
+    outline: none !important;
+}
+
+.floating-label {
+    position: absolute !important;
+    left: 1rem !important;
+    top: 50% !important;
+    transform: translateY(-50%) !important;
+    font-size: 0.875rem !important;
+    color: hsl(var(--bc) / 0.6) !important;
+    pointer-events: none !important;
+    transition: all 0.3s ease !important;
+    background-color: hsl(var(--b1)) !important;
+    padding: 0 0.25rem !important;
+    z-index: 10 !important;
+}
+
+.floating-input-field:focus ~ .floating-label,
+.floating-input-field:not(:placeholder-shown) ~ .floating-label {
+    top: 0 !important;
+    transform: translateY(-50%) scale(0.85) !important;
+    color: hsl(var(--a)) !important;
+}
+
+/* Efectos de gradiente y brillo */
+.gradient-text {
+    background: linear-gradient(to right, var(--accent), var(--primary));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+}
+
+.glow-effect {
+    position: relative;
+    overflow: hidden;
+}
+
+.glow-effect::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to right, 
+        rgba(var(--accent-rgb), 0.2),
+        rgba(var(--primary-rgb), 0.2)
+    );
+    filter: blur(1rem);
+    opacity: 0;
+    transition: opacity 0.5s;
+}
+
+.glow-effect:hover::before {
+    opacity: 1;
+}
+
+/* Añadir un estilo de prueba muy visible */
+.floating-input {
+    border: 3px solid red;
+    padding: 10px;
+}

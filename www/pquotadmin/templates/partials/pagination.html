@@ -1,0 +1,49 @@
+{% if listados.has_previous %}
+    <button class="inline-flex items-center justify-center px-3 py-1 text-blue-600 transition-colors duration-150 hover:bg-gray-300"
+            hx-get="{% url 'search-institucion' %}?page={{ listados.previous_page_number }}&search={{ search_query }}&order_by={{ current_order }}&direction={{ current_direction }}&per_page={{ items_per_page }}"
+            hx-target="#institucion-table">
+        Previos
+    </button>
+{% else %}
+    <span class="inline-flex items-center justify-center px-3 py-1 text-gray-400 bg-gray-200">
+        Previos
+    </span>
+{% endif %}
+
+{% for num in listados.paginator.page_range %}
+    {% if num == 1 or num == listados.paginator.num_pages %}
+        <button class="inline-flex items-center justify-center px-3 py-1 text-blue-600 transition-colors duration-150 hover:bg-gray-300"
+                hx-get="{% url 'search-institucion' %}?page={{ num }}&search={{ search_query }}&order_by={{ current_order }}&direction={{ current_direction }}&per_page={{ items_per_page }}"
+                hx-target="#institucion-table">
+            {{ num }}
+        </button>
+    {% elif num >= listados.number|add:'-1' and num <= listados.number|add:'1' %}
+        {% if num == listados.number %}
+            <span class="inline-flex items-center justify-center px-3 py-1 text-white bg-blue-500 font-semibold">
+                {{ num }}
+            </span>
+        {% else %}
+            <button class="inline-flex items-center justify-center px-3 py-1 text-blue-600 transition-colors duration-150 hover:bg-gray-300"
+                    hx-get="{% url 'search-institucion' %}?page={{ num }}&search={{ search_query }}&order_by={{ current_order }}&direction={{ current_direction }}&per_page={{ items_per_page }}"
+                    hx-target="#institucion-table">
+                {{ num }}
+            </button>
+        {% endif %}
+    {% elif num == listados.number|add:'-2' or num == listados.number|add:'2' %}
+        <span class="inline-flex items-center justify-center px-3 py-1 text-gray-400">
+            ...
+        </span>
+    {% endif %}
+{% endfor %}
+
+{% if listados.has_next %}
+    <button class="inline-flex items-center justify-center px-3 py-1 text-blue-600 transition-colors duration-150 hover:bg-gray-300"
+            hx-get="{% url 'search-institucion' %}?page={{ listados.next_page_number }}&search={{ search_query }}&order_by={{ current_order }}&direction={{ current_direction }}&per_page={{ items_per_page }}"
+            hx-target="#institucion-table">
+        Next
+    </button>
+{% else %}
+    <span class="inline-flex items-center justify-center px-3 py-1 text-gray-400 bg-gray-200">
+        Next
+    </span>
+{% endif %}

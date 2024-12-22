@@ -1,0 +1,157 @@
+{% for listado in listados %}
+<!-- Modal de Edición de Cuota -->
+<dialog id="edit_modal_{{ listado.client_ip|cut:'.'}}" class="modal">
+    <div class="modal-box">
+        <h3 class="font-bold text-lg">Editar Cuota - {{ listado.organization }}</h3>
+        <form class="mt-4" 
+            hx-post="{% url 'edit-institucion' %}" 
+            hx-target="#institucion-table"
+            hx-swap="innerHTML"
+            hx-on::after-request="edit_modal_{{ listado.client_ip|cut:'.' }}.close()">
+            {% csrf_token %}
+            <input type="hidden" name="client_ip" value="{{ listado.client_ip }}">
+            <input type="hidden" name="organization" value="{{ listado.organization }}">
+            <input type="hidden" name="used" value="{{ listado.used }}">
+            <div class="form-control">
+                <label class="mb-2">Cuota (MB)</label>
+                <input type="number" name="quota" value="{{ listado.quota|default:0|intdiv:1048576 }}" class="input input-bordered max-w" required>
+                <small class="text-gray-500 mt-1">Los valores se muestran en MB</small>
+            </div>
+            <!-- Botones de acción adicionales -->
+            <div class="flex gap-2 mt-2 mb-4">
+                <button type="button"
+                    class="btn btn-sm btn-info tooltip" 
+                    data-tip="Reiniciar consumo a 0"
+                    hx-post="{% url 'reset-institucion' listado.client_ip %}"
+                    hx-target="#institucion-table"
+                    hx-swap="innerHTML"
+                    hx-confirm="¿Está seguro que desea reiniciar?">
+                    Reiniciar
+                </button>
+                
+                <button type="button"
+                    class="btn btn-sm btn-error tooltip" 
+                    data-tip="Eliminar la cuota asignada"
+                    hx-post="{% url 'delete-cuota' listado.client_ip %}"
+                    hx-target="#institucion-table"
+                    hx-swap="innerHTML"
+                    hx-confirm="¿Está seguro que desea eliminar la cuota?">
+                    Eliminar Cuota
+                </button>
+            </div>
+            <div class="modal-action">
+                <button type="submit" class="btn btn-warning">Guardar Cambios</button>
+                <button type="button" class="btn" onclick="edit_modal_{{ listado.client_ip|cut:'.' }}.close()">Cancelar</button>
+            </div>
+        </form>
+    </div>
+</dialog>
+
+
+
+
+<!-- Modal de Edición de IP (ahora para editar usuario) -->
+<dialog id="edit_ip_modal_{{ listado.client_ip|cut:'.'}}" class="modal">
+    <div class="modal-box">
+        <h3 class="font-bold text-lg">Editar Usuario</h3>
+        <form class="mt-4" 
+            hx-post="{% url 'edit-client-ip' %}" 
+            hx-target="#institucion-table"
+            hx-swap="innerHTML"
+            hx-on::after-request="edit_ip_modal_{{ listado.client_ip|cut:'.' }}.close()">
+            {% csrf_token %}
+            <input type="hidden" name="client_ip" value="{{ listado.client_ip }}">
+            <div class="form-control">
+                <label class="mb-2">Nombre de Usuario</label>
+                <input type="text" 
+                       name="new_ip" 
+                       value="{{ listado.client_ip }}" 
+                       class="input input-bordered max-w" 
+                       required
+                       pattern="[A-Za-z0-9_-]+"
+                       title="Solo se permiten letras, números, guiones y guiones bajos">
+            </div>
+
+            <!-- Sección de eliminación (movida del modal anterior) -->
+            <div class="mt-6 border-t pt-4">
+                <div class="flex items-center gap-2 mb-2 text-error">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
+                    </svg>
+                    <span class="text-sm font-semibold">Zona de Peligro</span>
+                </div>
+                <button type="button"
+                        class="btn btn-error w-full gap-2 hover:bg-red-700 hover:border-red-800 tooltip tooltip-warning flex items-center justify-center" 
+                        data-tip="Esta acción eliminará permanentemente el usuario"
+                        hx-delete="{% url 'delete-listado' listado.client_ip %}"
+                        hx-confirm="¿Está completamente seguro que desea eliminar este usuario? Esta acción no se puede deshacer."
+                        hx-target="#institucion-table"
+                        hx-swap="innerHTML"
+                        hx-on::after-request="edit_ip_modal_{{ listado.client_ip|cut:'.' }}.close()"
+                        hx-trigger="click">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 inline-block" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
+                    </svg>
+                    <span class="inline-block">Eliminar Usuario</span>
+                </button>
+            </div>
+
+            <div class="modal-action mt-6 flex justify-between">
+                <button type="button" 
+                        class="btn btn-ghost" 
+                        onclick="edit_ip_modal_{{ listado.client_ip|cut:'.' }}.close()">
+                    Cancelar
+                </button>
+                <button type="submit" 
+                        class="btn btn-primary"
+                        data-tip="Guardar cambios en el nombre de usuario">
+                    Guardar Cambios
+                </button>
+            </div>
+        </form>
+    </div>
+</dialog>
+
+
+
+
+
+{% endfor %}
+
+
+
+
+<!-- Modal de Agregar Nueva Institución -->
+<dialog id="my_modal_1" class="modal">
+    <div class="modal-box">
+        <h3 class="font-bold text-lg">Agregar Nuevo Usuario</h3>
+        <form class="mt-4" 
+              hx-post="{% url 'add-institucion' %}" 
+              hx-target="#institucion-table"
+              hx-swap="innerHTML"
+              hx-on::after-request="my_modal_1.close()">
+            {% csrf_token %}
+            <div class="form-control">
+                <label class="mb-2">Nombre de Usuario</label>
+                <input type="text" 
+                       name="client_ip" 
+                       class="input input-bordered" 
+                       required 
+                       pattern="[A-Za-z0-9_-]+"
+                       title="Solo se permiten letras, números, guiones y guiones bajos">
+            </div>
+            
+            <div class="form-control mt-4">
+                <label class="mb-2">Cuota (MB)</label>
+                <input type="number" 
+                       name="quota" 
+                       class="input input-bordered" 
+                       required>
+            </div>
+            <div class="modal-action">
+                <button type="submit" class="btn btn-warning">Guardar</button>
+                <button type="button" class="btn" onclick="my_modal_1.close()">Cancelar</button>
+            </div>
+        </form>
+    </div>
+</dialog>

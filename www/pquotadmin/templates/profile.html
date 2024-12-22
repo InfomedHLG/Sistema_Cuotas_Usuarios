@@ -1,0 +1,377 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <div class="max-w-4xl mx-auto">
+        <!-- Cabecera del Perfil -->
+        <div class="bg-base-100 shadow-xl rounded-2xl overflow-hidden">
+            <div class="p-8">
+                <div class="flex justify-between items-center mb-6">
+                    <div class="flex items-center gap-4">
+                        <div class="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center text-primary text-xl font-semibold">
+                            {{ user.first_name|slice:":1" }}{{ user.last_name|slice:":1" }}
+                        </div>
+                        <div>
+                            <h1 class="text-2xl font-bold">{{ user.first_name }} {{ user.last_name }}</h1>
+                            <p class="text-base-content/60">@{{ user.username }}</p>
+                        </div>
+                    </div>
+                    <a href="{% url 'index' %}" class="btn btn-ghost btn-sm gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 17l-5-5m0 0l5-5m-5 5h12" />
+                        </svg>
+                        Volver
+                    </a>
+                </div>
+
+                {% if messages %}
+                    {% for message in messages %}
+                        <div class="alert {{ message.tags }} mb-4">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+
+                {% if user.is_superuser %}
+                <div class="mb-6 flex justify-end">
+                    <button onclick="create_user_modal.showModal()" class="btn btn-primary gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                        </svg>
+                        Crear Usuario
+                    </button>
+                </div>
+                {% endif %}
+
+                <!-- Información Principal -->
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+                    <!-- Columna 1: Información Personal -->
+                    <div class="bg-base-200/50 rounded-xl px-4 py-6">
+                        <h2 class="text-lg font-semibold h-[40px] flex items-center gap-2">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                            </svg>
+                            Información Personal
+                        </h2>
+                        <div class="space-y-3">
+                            <div class="flex flex-col">
+                                <div class="flex justify-between items-center mb-1">
+                                    <span class="text-sm text-base-content/60">Nombre Completo</span>
+                                    <button onclick="name_modal.showModal()" class="btn btn-ghost btn-xs">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                                        </svg>
+                                    </button>
+                                </div>
+                                <span class="font-medium">{{ user.first_name }} {{ user.last_name }}</span>
+                            </div>
+                            <div class="flex flex-col">
+                                <div class="flex justify-between items-center mb-1">
+                                    <span class="text-sm text-base-content/60">Correo Electrónico</span>
+                                    <button onclick="email_modal.showModal()" class="btn btn-ghost btn-xs">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                                        </svg>
+                                    </button>
+                                </div>
+                                <span class="font-medium">{{ user.email|default:"No especificado" }}</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Columna 2: Información de la Cuenta -->
+                    <div class="bg-base-200/50 rounded-xl px-4 py-6">
+                        <h2 class="text-lg font-semibold h-[40px] flex items-center gap-2">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-secondary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                            </svg>
+                            Información de Cuenta
+                        </h2>
+                        <div class="space-y-3">
+                            <div class="flex flex-col">
+                                <span class="text-sm text-base-content/60">Fecha de Registro</span>
+                                <span class="font-medium">{{ user.date_joined|date:"j \d\e M \d\e\l Y" }}</span>
+                            </div>
+                            <div class="flex flex-col">
+                                <span class="text-sm text-base-content/60">Último Acceso</span>
+                                <span class="font-medium">{{ user.last_login|date:"j \d\e M \d\e\l Y g:i A" }}</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Columna 3: Configuración -->
+                    <div class="bg-base-200/50 rounded-xl px-4 py-6">
+                        <h2 class="text-lg font-semibold h-[40px] flex items-center gap-2">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-accent" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                            </svg>
+                            Configuración
+                        </h2>
+                        <div class="space-y-4">
+                            <div class="flex flex-col">
+                                <span class="text-sm text-base-content/60 mb-2">Tema de la Aplicación</span>
+                                <button id="theme-toggle" class="btn btn-sm gap-2">
+                                    <span id="theme-icon" class="text-sm">☀️</span>
+                                    <span id="theme-text" class="text-sm">Cambiar Tema</span>
+                                </button>
+                            </div>
+                            <div class="flex flex-col">
+                                <span class="text-sm text-base-content/60 mb-2">Seguridad</span>
+                                <button class="btn btn-warning btn-sm gap-2" onclick="password_modal.showModal()">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" />
+                                    </svg>
+                                    Cambiar Contraseña
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal para cambiar contraseña -->
+<dialog id="password_modal" class="modal">
+    <div class="modal-box">
+        <h3 class="font-bold text-lg mb-4">Cambiar Contraseña</h3>
+        
+        <form method="POST" action="{% url 'change-password' %}" class="space-y-4">
+            {% csrf_token %}
+            <div class="form-control">
+                <label class="label">
+                    <span class="label-text">Contraseña Actual</span>
+                </label>
+                <input type="password" 
+                       name="old_password" 
+                       required 
+                       class="input input-bordered w-full" 
+                       placeholder="Ingrese su contraseña actual">
+            </div>
+
+            <div class="form-control">
+                <label class="label">
+                    <span class="label-text">Nueva Contraseña</span>
+                </label>
+                <input type="password" 
+                       name="new_password" 
+                       required 
+                       class="input input-bordered w-full" 
+                       placeholder="Ingrese la nueva contraseña">
+            </div>
+
+            <div class="form-control">
+                <label class="label">
+                    <span class="label-text">Confirmar Nueva Contraseña</span>
+                </label>
+                <input type="password" 
+                       name="confirm_password" 
+                       required 
+                       class="input input-bordered w-full" 
+                       placeholder="Confirme la nueva contraseña">
+            </div>
+
+            <div class="modal-action">
+                <button type="button" class="btn btn-ghost" onclick="password_modal.close()">Cancelar</button>
+                <button type="submit" class="btn btn-warning">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4" />
+                    </svg>
+                    Actualizar Contraseña
+                </button>
+            </div>
+        </form>
+    </div>
+    <form method="dialog" class="modal-backdrop">
+        <button>close</button>
+    </form>
+</dialog>
+
+<!-- Modal para editar nombre -->
+<dialog id="name_modal" class="modal">
+    <div class="modal-box">
+        <h3 class="font-bold text-lg mb-4">Editar Nombre</h3>
+        <form method="POST" action="{% url 'update-profile' %}" class="space-y-4">
+            {% csrf_token %}
+            <div class="grid grid-cols-2 gap-4">
+                <div class="form-control">
+                    <label class="label">
+                        <span class="label-text">Nombre</span>
+                    </label>
+                    <input type="text" 
+                           name="first_name" 
+                           value="{{ user.first_name }}"
+                           required 
+                           class="input input-bordered w-full" 
+                           placeholder="Nombre">
+                </div>
+                <div class="form-control">
+                    <label class="label">
+                        <span class="label-text">Apellido</span>
+                    </label>
+                    <input type="text" 
+                           name="last_name" 
+                           value="{{ user.last_name }}"
+                           required 
+                           class="input input-bordered w-full" 
+                           placeholder="Apellido">
+                </div>
+            </div>
+            <div class="modal-action">
+                <button type="button" class="btn btn-ghost" onclick="name_modal.close()">Cancelar</button>
+                <button type="submit" class="btn btn-primary">Guardar</button>
+            </div>
+        </form>
+    </div>
+    <form method="dialog" class="modal-backdrop">
+        <button>close</button>
+    </form>
+</dialog>
+
+<!-- Modal para editar correo -->
+<dialog id="email_modal" class="modal">
+    <div class="modal-box">
+        <h3 class="font-bold text-lg mb-4">Editar Correo Electrónico</h3>
+        <form method="POST" action="{% url 'update-profile' %}" class="space-y-4">
+            {% csrf_token %}
+            <div class="form-control">
+                <label class="label">
+                    <span class="label-text">Correo Electrónico</span>
+                </label>
+                <input type="email" 
+                       name="email" 
+                       value="{{ user.email }}"
+                       required 
+                       class="input input-bordered w-full" 
+                       placeholder="correo@ejemplo.com">
+            </div>
+            <div class="modal-action">
+                <button type="button" class="btn btn-ghost" onclick="email_modal.close()">Cancelar</button>
+                <button type="submit" class="btn btn-primary">Guardar</button>
+            </div>
+        </form>
+    </div>
+    <form method="dialog" class="modal-backdrop">
+        <button>close</button>
+    </form>
+</dialog>
+
+<!-- Modal para crear usuario -->
+<dialog id="create_user_modal" class="modal">
+    <div class="modal-box max-w-2xl">
+        <h3 class="font-bold text-lg mb-4">Crear Nuevo Usuario</h3>
+        <form method="POST" action="{% url 'create-user' %}" class="space-y-4">
+            {% csrf_token %}
+            
+            <!-- Nombre de usuario y contraseña -->
+            <div class="grid grid-cols-2 gap-4">
+                <div class="form-control">
+                    <label class="label">
+                        <span class="label-text">Nombre de Usuario</span>
+                    </label>
+                    <input type="text" 
+                           name="username" 
+                           required 
+                           class="input input-bordered w-full" 
+                           placeholder="usuario123">
+                </div>
+                <div class="form-control">
+                    <label class="label">
+                        <span class="label-text">Contraseña</span>
+                    </label>
+                    <input type="password" 
+                           name="password" 
+                           required 
+                           class="input input-bordered w-full" 
+                           placeholder="••••••••">
+                </div>
+            </div>
+
+            <!-- Nombre y Apellido -->
+            <div class="grid grid-cols-2 gap-4">
+                <div class="form-control">
+                    <label class="label">
+                        <span class="label-text">Nombre</span>
+                    </label>
+                    <input type="text" 
+                           name="first_name" 
+                           required 
+                           class="input input-bordered w-full" 
+                           placeholder="Nombre">
+                </div>
+                <div class="form-control">
+                    <label class="label">
+                        <span class="label-text">Apellido</span>
+                    </label>
+                    <input type="text" 
+                           name="last_name" 
+                           required 
+                           class="input input-bordered w-full" 
+                           placeholder="Apellido">
+                </div>
+            </div>
+
+            <!-- Correo -->
+            <div class="form-control">
+                <label class="label">
+                    <span class="label-text">Correo Electrónico</span>
+                </label>
+                <input type="email" 
+                       name="email" 
+                       required 
+                       class="input input-bordered w-full" 
+                       placeholder="correo@ejemplo.com">
+            </div>
+
+            <!-- Permisos -->
+            <div class="flex gap-4">
+                <label class="label cursor-pointer justify-start gap-2">
+                    <input type="checkbox" name="is_staff" class="checkbox checkbox-primary">
+                    <span class="label-text">Es Staff</span>
+                </label>
+                <label class="label cursor-pointer justify-start gap-2">
+                    <input type="checkbox" name="is_superuser" class="checkbox checkbox-primary">
+                    <span class="label-text">Es Superusuario</span>
+                </label>
+            </div>
+
+            <div class="modal-action">
+                <button type="button" class="btn btn-ghost" onclick="create_user_modal.close()">Cancelar</button>
+                <button type="submit" class="btn btn-primary">Crear Usuario</button>
+            </div>
+        </form>
+    </div>
+    <form method="dialog" class="modal-backdrop">
+        <button>close</button>
+    </form>
+</dialog>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const themeToggle = document.getElementById('theme-toggle');
+        const themeIcon = document.getElementById('theme-icon');
+        const themeText = document.getElementById('theme-text');
+        const html = document.documentElement;
+
+        function updateThemeUI(theme) {
+            themeIcon.textContent = theme === 'light' ? '☀️' : '🌙';
+            themeText.textContent = theme === 'light' ? 'Tema Claro' : 'Tema Oscuro';
+        }
+
+        // Inicializar UI
+        const currentTheme = localStorage.getItem('user-theme') || 'light';
+        updateThemeUI(currentTheme);
+
+        themeToggle.addEventListener('click', function() {
+            const currentTheme = html.getAttribute('data-theme');
+            const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+            
+            html.setAttribute('data-theme', newTheme);
+            localStorage.setItem('user-theme', newTheme);
+            updateThemeUI(newTheme);
+        });
+    });
+</script>
+{% endblock %}

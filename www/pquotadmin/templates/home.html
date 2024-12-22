@@ -1,0 +1,413 @@
+{% extends 'base.html' %}
+{% load widget_tweaks %}
+{% load partials %}
+
+{% block content %}
+<section class="container-md mx-auto px-4 mt-4 overflow-x-hidden">
+    <div class="max-w-[95%] mx-auto"> <!-- Agregamos contenedor con margen automático y ancho máximo -->
+        <div class="flex items-center gap-4 mb-4">
+
+         <!-- Lado izquierdo -->           
+        <div class="flex-none flex items-center gap-4"> <!-- Aumentamos gap-2 a gap-4 -->
+            <button class="btn btn-accent btn-sm tooltip" 
+                    data-tip="Agregar nuevo usuario" 
+                    onclick="document.getElementById('my_modal_1').showModal()">
+                Agregar
+            </button>
+            
+            <div class="form-control">
+                <input id="search-input"
+                       type="text" 
+                       name="search" 
+                       placeholder="Buscar usuario..." 
+                       class="input input-bordered input-sm w-64"
+                       hx-get="{% url 'search-institucion' %}"
+                       hx-trigger="keyup changed delay:500ms"
+                       hx-target="#institucion-table"
+                       hx-include="[name='per_page']"
+                       _="on htmx:configRequest set event.detail.parameters.per_page to localStorage.getItem('itemsPerPage') || '10'"
+                       hx-swap="innerHTML">
+            </div>
+
+            <div class="form-control flex-row items-center gap-2">
+                <div class="flex flex-col">
+                    <span class="text-xs text-gray-600">Actualización:</span>
+                    <span id="countdown" class="text-xs text-gray-500 hidden">
+                        Próxima: <span id="countdown-value" class="font-medium">--</span>
+                    </span>
+                </div>
+                <select id="refresh-time" 
+                        class="select select-bordered select-sm h-8 min-h-8 tooltip text-sm"
+                        data-tip="Intervalo de actualización automática de datos"
+                        onchange="updateRefreshInterval(this.value)">
+                    <option value="0" selected>Desactivado</option>
+                    <option value="10">10 segundos</option>
+                    <option value="20">20 segundos</option>
+                    <option value="30">30 segundos</option>
+                    <option value="60">1 minuto</option>
+                    <option value="300">5 minutos</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="flex-1 flex justify-end relative">
+            <div class="stats shadow bg-base-100/50 backdrop-blur-sm rounded-lg border border-gray-200/20 flex flex-row overflow-visible">
+                <div class="stat py-2.5 px-1 w-20 text-center tooltip tooltip-bottom before:z-50 before:text-xs hover:bg-base-200/30 transition-colors duration-200" 
+                     data-tip="Número total de instituciones registradas">
+                    <div class="stat-title text-[12px] font-medium mb-0.5 opacity-75">Total Usuarios</div>
+                    <div class="stat-value text-accent text-sm font-bold">{{ total }}</div>
+                </div>
+                
+                <div class="stat py-2.5 px-1 w-20 text-center tooltip tooltip-bottom before:z-50 before:text-xs hover:bg-base-200/30 transition-colors duration-200" 
+                     data-tip="Clientes que han superado su cuota asignada">
+                    <div class="stat-title text-[12px] font-medium mb-0.5 opacity-75">Excedidos</div>
+                    <div class="stat-value text-error text-sm font-bold">{{ pasadocuota }}</div>
+                </div>
+                
+                <div class="stat py-2.5 px-1 w-20 text-center tooltip tooltip-bottom before:z-50 before:text-xs hover:bg-base-200/30 transition-colors duration-200" 
+                     data-tip="Clientes sin cuota asignada">
+                    <div class="stat-title text-[12px] font-medium mb-0.5 opacity-75">Sin cuota</div>
+                    <div class="stat-value text-info text-sm font-bold">{{ sincuota }}</div>
+                </div>
+                
+                <div id="stats-container"
+                     hx-get="{% url 'update-stats' %}"
+                     hx-trigger="stats-update"
+                     hx-swap="innerHTML">
+                    {% include "partials/stats_update.html" %}
+                </div>
+                
+                <div class="stat py-2.5 px-1 w-24 text-center tooltip tooltip-bottom before:z-50 before:text-xs hover:bg-base-200/30 transition-colors duration-200" 
+                     data-tip="Consumo total en las últimas 24 horas">
+                    <div class="stat-title text-[12px] font-medium mb-0.5 opacity-75">Consumo Semanal</div>
+                    <div class="stat-value text-secondary text-sm font-bold">{{ total_24h|format_bytes }}</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+
+
+    <div class="overflow-x-auto flex justify-center"> 
+        <table class="table w-full">
+            <thead>
+                <tr>
+                    <th class="min-w-[120px] pl-24"> <!-- Aumentamos a pl-24 -->
+                        <div class="flex items-center gap-1 whitespace-nowrap">
+                            Nombre de Usuarios
+                            <div class="flex flex-col text-[0.6rem] text-gray-400 leading-none">
+                                <button class="hover:text-primary" 
+                                        hx-get="{% url 'search-institucion' %}?order_by=client_ip&direction=asc"
+                                        hx-target="#institucion-table"
+                                        {% if current_order == 'client_ip' and current_direction == 'asc' %}class="text-primary"{% endif %}>
+                                    ▴
+                                </button>
+                                <button class="hover:text-primary"
+                                        hx-get="{% url 'search-institucion' %}?order_by=client_ip&direction=desc"
+                                        hx-target="#institucion-table"
+                                        {% if current_order == 'client_ip' and current_direction == 'desc' %}class="text-primary"{% endif %}>
+                                    ▾
+                                </button>
+                            </div>
+                        </div>
+                    </th>
+
+
+
+                    <th class="min-w-[80px] px-0 text-center">
+                        <div class="flex items-center justify-center gap-1 whitespace-nowrap">
+                            Consumo
+                            <div class="flex flex-col text-[0.6rem] text-gray-400 leading-none">
+                                <button class="hover:text-primary"
+                                        hx-get="{% url 'search-institucion' %}?order_by=used&direction=asc"
+                                        hx-target="#institucion-table"
+                                        {% if current_order == 'used' and current_direction == 'asc' %}class="text-primary"{% endif %}>
+                                    ▴
+                                </button>
+                                <button class="hover:text-primary"
+                                        hx-get="{% url 'search-institucion' %}?order_by=used&direction=desc"
+                                        hx-target="#institucion-table"
+                                        {% if current_order == 'used' and current_direction == 'desc' %}class="text-primary"{% endif %}>
+                                    ▾
+                                </button>
+                            </div>
+                        </div>
+                    </th>
+
+                    <th class="min-w-[80px] px-0 text-center -ml-3">
+                        <div class="flex items-center justify-center gap-1 whitespace-nowrap">
+                            Consumo Semanal
+                            <div class="flex flex-col text-[0.6rem] text-gray-400 leading-none">
+                                <button class="hover:text-primary"
+                                        hx-get="{% url 'search-institucion' %}?order_by=used_24h&direction=asc"
+                                        hx-target="#institucion-table"
+                                        {% if current_order == 'used_24h' and current_direction == 'asc' %}class="text-primary"{% endif %}>
+                                    ▴
+                                </button>
+                                <button class="hover:text-primary"
+                                        hx-get="{% url 'search-institucion' %}?order_by=used_24h&direction=desc"
+                                        hx-target="#institucion-table"
+                                        {% if current_order == 'used_24h' and current_direction == 'desc' %}class="text-primary"{% endif %}>
+                                    ▾
+                                </button>
+                            </div>
+                        </div>
+                    </th>            
+
+                    <th class="min-w-[80px] px-0 text-center -ml-3">        
+                        <div class="flex items-center justify-center gap-1 whitespace-nowrap">
+                            Cuota
+                            <div class="flex flex-col text-[0.6rem] text-gray-400 leading-none">
+                                <button class="hover:text-primary"
+                                        hx-get="{% url 'search-institucion' %}?order_by=quota&direction=asc"
+                                        hx-target="#institucion-table"
+                                        {% if current_order == 'quota' and current_direction == 'asc' %}class="text-primary"{% endif %}>
+                                    ▴
+                                </button>
+                                <button class="hover:text-primary"
+                                        hx-get="{% url 'search-institucion' %}?order_by=quota&direction=desc"
+                                        hx-target="#institucion-table"
+                                        {% if current_order == 'quota' and current_direction == 'desc' %}class="text-primary"{% endif %}>
+                                    ▾
+                                </button>
+                            </div>
+                        </div>
+                    </th>
+
+                    <th>Cache</th>
+                    <th class="min-w-[120px] px-0">
+                        <div class="flex items-center gap-1">
+                            Última Actualización
+                            <div class="flex flex-col text-[0.6rem] text-gray-400 leading-none">
+                                <button class="hover:text-primary"
+                                        hx-get="{% url 'search-institucion' %}?order_by=last_update&direction=asc"
+                                        hx-target="#institucion-table"
+                                        {% if current_order == 'last_update' and current_direction == 'asc' %}class="text-primary"{% endif %}>
+                                    ▴
+                                </button>
+                                <button class="hover:text-primary"
+                                        hx-get="{% url 'search-institucion' %}?order_by=last_update&direction=desc"
+                                        hx-target="#institucion-table"
+                                        {% if current_order == 'last_update' and current_direction == 'desc' %}class="text-primary"{% endif %}>
+                                    ▾
+                                </button>
+                            </div>
+                        </div>
+                    </th>
+                </tr>
+            </thead>
+
+
+            
+
+            <!-- Contenedor de la tabla con actualización automática -->
+            <tbody id="institucion-table"
+                   hx-get="{% url 'auto-update' %}"
+                   hx-target="#institucion-table"
+                   hx-trigger="table-update"
+                   hx-swap="innerHTML">
+                {% include "partials/listado_partial.html" %}
+            </tbody>
+        </table>
+    </div>
+</section>
+
+<!-- Script para manejar los modales -->
+<script>
+function saveOrderPreferences(orderBy, direction) {
+    localStorage.setItem('tableOrderBy', orderBy);
+    localStorage.setItem('tableOrderDirection', direction);
+}
+
+function loadOrderPreferences() {
+    return {
+        orderBy: localStorage.getItem('tableOrderBy') || 'last_update',
+        direction: localStorage.getItem('tableOrderDirection') || 'desc'
+    };
+}
+
+function showModal(ip, type) {
+    try {
+        // Sanitizar el ID removiendo puntos y espacios
+        const sanitizedId = ip.replace(/[.\s]/g, '');
+        const modalId = `${type}_modal_${sanitizedId}`;
+        const modal = document.getElementById(modalId);
+        
+        if (modal) {
+            modal.showModal();
+        } else {
+            console.warn(`Modal ${modalId} no encontrado. IP original: ${ip}`);
+            
+            // Intentar actualizar los modales
+            htmx.ajax('GET', '/update-modals/', {
+                target: '#modals-container',
+                swap: 'innerHTML',
+                values: { ip: ip }
+            }).then(() => {
+                // Intentar abrir el modal nuevamente después de la actualización
+                const updatedModal = document.getElementById(modalId);
+                if (updatedModal) {
+                    updatedModal.showModal();
+                }
+            });
+        }
+    } catch (error) {
+        console.error('Error al mostrar modal:', error, {ip, type});
+    }
+}
+
+// Manejar actualizaciones HTMX
+document.addEventListener('htmx:afterSwap', function(event) {
+    const url = new URL(event.detail.requestConfig.path, window.location.origin);
+    const orderBy = url.searchParams.get('order_by');
+    const direction = url.searchParams.get('direction');
+    
+    if (orderBy && direction) {
+        saveOrderPreferences(orderBy, direction);
+    }
+});
+
+// Cerrar modales cuando se presiona Escape
+document.addEventListener('keydown', function(event) {
+    if (event.key === 'Escape') {
+        document.querySelectorAll('dialog[open]').forEach(dialog => {
+            dialog.close();
+        });
+    }
+});
+
+let updateInterval = null;
+let countdownInterval = null;
+
+function updateRefreshInterval(seconds) {
+    const table = document.getElementById('institucion-table');
+    const stats = document.getElementById('stats-container');
+    const countdownElement = document.getElementById('countdown');
+    const countdownValue = document.getElementById('countdown-value');
+    
+    // Limpiar intervalos existentes
+    if (updateInterval) {
+        clearInterval(updateInterval);
+        updateInterval = null;
+    }
+    if (countdownInterval) {
+        clearInterval(countdownInterval);
+        countdownInterval = null;
+    }
+
+    // Si está desactivado, ocultar contador y retornar
+    if (seconds === "0") {
+        countdownElement.classList.add('hidden');
+        return;
+    }
+
+    // Mostrar contador
+    countdownElement.classList.remove('hidden');
+    
+    // Función para actualizar datos
+    const updateData = () => {
+        if (table && seconds !== "0") {
+            const prefs = loadOrderPreferences();
+            const itemsPerPage = loadItemsPerPage();
+            htmx.ajax('GET', `{% url 'auto-update' %}?order_by=${prefs.orderBy}&direction=${prefs.direction}&per_page=${itemsPerPage}`, {
+                target: '#institucion-table',
+                swap: 'innerHTML'
+            });
+        }
+        if (stats && seconds !== "0") {
+            htmx.trigger(stats, 'stats-update');
+        }
+    };
+
+    // Función para actualizar el contador
+    let timeLeft = parseInt(seconds);
+    const updateCountdown = () => {
+        countdownValue.textContent = timeLeft + 's';
+        
+        if (timeLeft <= 5) {
+            countdownValue.classList.add('text-warning');
+        } else {
+            countdownValue.classList.remove('text-warning');
+        }
+
+        timeLeft--;
+        
+        if (timeLeft < 0) {
+            timeLeft = parseInt(seconds);
+            updateData(); // Actualizar datos cuando el contador llega a 0
+        }
+    };
+
+    // Iniciar contador
+    timeLeft = parseInt(seconds);
+    updateCountdown();
+    
+    // Configurar intervalo del contador
+    countdownInterval = setInterval(updateCountdown, 1000);
+}
+
+// Agregar función para aplicar el orden al cargar la p��gina
+function applyStoredOrder() {
+    const prefs = loadOrderPreferences();
+    if (prefs.orderBy && prefs.direction) {
+        htmx.ajax('GET', `{% url 'search-institucion' %}?order_by=${prefs.orderBy}&direction=${prefs.direction}`, {
+            target: '#institucion-table',
+            swap: 'innerHTML'
+        });
+    }
+}
+
+// Modificar el DOMContentLoaded para incluir la aplicación del orden
+document.addEventListener('DOMContentLoaded', function() {
+    const savedItemsPerPage = initializeItemsPerPage();
+    updateRefreshInterval("0");
+    applyStoredOrder();
+    
+    // Asegurarse de que todas las peticiones HTMX incluyan el valor correcto
+    htmx.on('htmx:configRequest', (event) => {
+        event.detail.parameters['per_page'] = localStorage.getItem('itemsPerPage') || '10';
+    });
+
+    // Aplicar el valor guardado inmediatamente después de cargar la página
+    const itemsPerPage = loadItemsPerPage();
+    if (itemsPerPage !== '10') {  // Si es diferente del valor por defecto
+        htmx.ajax('GET', `{% url 'search-institucion' %}?per_page=${itemsPerPage}`, {
+            target: '#institucion-table',
+            swap: 'innerHTML'
+        });
+    }
+});
+
+// Modificar el select de items por página
+document.querySelector('[name="per_page"]').addEventListener('change', function() {
+    saveItemsPerPage(this.value);
+});
+
+// Añadir estas funciones al script existente
+function saveItemsPerPage(value) {
+    localStorage.setItem('itemsPerPage', value);
+    document.cookie = `items_per_page=${value}; path=/`;
+}
+
+function loadItemsPerPage() {
+    return localStorage.getItem('itemsPerPage') || '10';
+}
+
+function initializeItemsPerPage() {
+    const savedValue = localStorage.getItem('itemsPerPage') || '10';
+    const perPageSelect = document.querySelector('[name="per_page"]');
+    if (perPageSelect) {
+        perPageSelect.value = savedValue;
+    }
+    return savedValue;
+}
+</script>
+
+<!-- Contenedor para los modales -->
+<div id="modals-container">
+    {% include "partials/modals.html" %}
+</div>
+
+{% endblock %}

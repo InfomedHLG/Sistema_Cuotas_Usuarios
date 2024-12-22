@@ -1,0 +1,136 @@
+{% for listado in listados %}
+<tr class="border-b border-base-200 hover:bg-primary/5 hover:shadow-md hover:scale-[1.01] hover:border-primary/20 transition-all duration-300 cursor-default relative group">
+    <td class="before:absolute before:left-0 before:w-1 before:h-0 before:bg-primary hover:before:h-full before:transition-all before:duration-300 pl-24"> <!-- Aumentamos a pl-24 -->
+        <span class="cursor-pointer hover:text-primary hover:underline tooltip" 
+              data-tip="Click para editar usuario"
+              onclick="showModal('{{ listado.client_ip }}', 'edit_ip')">
+            {{ listado.client_ip }}
+        </span>
+    </td>
+
+
+
+    <td class="text-center">{{ listado.used|filesizeformat }}</td>
+    <td class="text-center">{{ listado.used_quota_24h|filesizeformat }}</td>
+    <td class="text-center">
+
+        
+        <div class="flex flex-col items-center gap-0.5">
+            <span class="cursor-pointer hover:text-primary hover:underline tooltip" 
+            data-tip="Click para editar cuota"
+            onclick="showModal('{{ listado.client_ip }}', 'edit')">
+          {{ listado.quota|filesizeformat }}
+      </span>
+
+
+            {% if listado.quota > 0 %}
+                {% with percent=listado.used|multiply:100|intdiv:listado.quota %}
+                <div class="flex items-center justify-center gap-1 tooltip" 
+                     data-tip="Usado: {{ listado.used|filesizeformat }} de {{ listado.quota|filesizeformat }}">
+                    <div class="w-16 h-1 bg-gray-200 rounded-full overflow-hidden">
+                        <div class="h-1 rounded-full transition-all duration-500 
+                            {% if percent < 70 %}
+                                bg-success
+                            {% elif percent < 90 %}
+                                bg-warning animate-pulse
+                            {% else %}
+                                bg-error animate-pulse
+                            {% endif %}"
+                            style="width: {% if percent > 100 %}100{% else %}{{ percent }}{% endif %}%">
+                        </div>
+                    </div>
+                    <span class="text-[0.65rem] text-gray-400">
+                        {{ percent }}%
+                    </span>
+                </div>
+                {% endwith %}
+            {% endif %}
+        </div>
+    </td>
+    <td>{{ listado.cache_peer }}</td>
+    <td>{{ listado.last_update_str }}</td>
+</tr>
+{% endfor %}
+
+{% if listados.paginator %}
+<tr>
+    <td colspan="6">
+        <div class="pagination flex justify-center items-center mt-6 mb-6">
+            <div class="flex items-center gap-4">
+                <div class="text-sm text-gray-600">
+                    Mostrando {{ listados.start_index }} a {{ listados.end_index }} de {{ listados.paginator.count }} entradas
+                </div>
+                
+                <div class="flex items-center gap-2">
+                    <span class="text-sm text-gray-600">Mostrar</span>
+                    <select class="select select-bordered select-sm"
+                            hx-get="{% url 'search-institucion' %}"
+                            hx-target="#institucion-table"
+                            hx-include="[name='search']"
+                            name="per_page"
+                            onchange="saveItemsPerPage(this.value)">
+                        {% for option in '10,25,50,100'|split:',' %}
+                            <option value="{{ option }}" {% if items_per_page == option|add:0 %}selected{% endif %}>
+                                {{ option }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                    <span class="text-sm text-gray-600">por página</span>
+                </div>
+            </div>
+
+            <div class="flex items-center gap-2">
+                {% if listados.has_previous %}
+                    <button class="inline-flex items-center justify-center px-3 py-1 text-blue-600 transition-colors duration-150 hover:bg-gray-300"
+                            hx-get="{% url 'search-institucion' %}?page={{ listados.previous_page_number }}&search={{ search_query }}&order_by={{ current_order }}&direction={{ current_direction }}&per_page={{ items_per_page }}"
+                            hx-target="#institucion-table">
+                        Previos
+                    </button>
+                {% else %}
+                    <span class="inline-flex items-center justify-center px-3 py-1 text-gray-400 bg-gray-200">
+                        Previos
+                    </span>
+                {% endif %}
+
+                {% for num in listados.paginator.page_range %}
+                    {% if num == 1 or num == listados.paginator.num_pages %}
+                        <button class="inline-flex items-center justify-center px-3 py-1 text-blue-600 transition-colors duration-150 hover:bg-gray-300"
+                                hx-get="{% url 'search-institucion' %}?page={{ num }}&search={{ search_query }}&order_by={{ current_order }}&direction={{ current_direction }}&per_page={{ items_per_page }}"
+                                hx-target="#institucion-table">
+                            {{ num }}
+                        </button>
+                    {% elif num >= listados.number|add:'-1' and num <= listados.number|add:'1' %}
+                        {% if num == listados.number %}
+                            <span class="inline-flex items-center justify-center px-3 py-1 text-white bg-blue-500 font-semibold">
+                                {{ num }}
+                            </span>
+                        {% else %}
+                            <button class="inline-flex items-center justify-center px-3 py-1 text-blue-600 transition-colors duration-150 hover:bg-gray-300"
+                                    hx-get="{% url 'search-institucion' %}?page={{ num }}&search={{ search_query }}&order_by={{ current_order }}&direction={{ current_direction }}&per_page={{ items_per_page }}"
+                                    hx-target="#institucion-table">
+                                {{ num }}
+                            </button>
+                        {% endif %}
+                    {% elif num == listados.number|add:'-2' or num == listados.number|add:'2' %}
+                        <span class="inline-flex items-center justify-center px-3 py-1 text-gray-400">
+                            ...
+                        </span>
+                    {% endif %}
+                {% endfor %}
+
+                {% if listados.has_next %}
+                    <button class="inline-flex items-center justify-center px-3 py-1 text-blue-600 transition-colors duration-150 hover:bg-gray-300"
+                            hx-get="{% url 'search-institucion' %}?page={{ listados.next_page_number }}&search={{ search_query }}&order_by={{ current_order }}&direction={{ current_direction }}&per_page={{ items_per_page }}"
+                            hx-target="#institucion-table">
+                        Next
+                    </button>
+                {% else %}
+                    <span class="inline-flex items-center justify-center px-3 py-1 text-gray-400 bg-gray-200">
+                        Next
+                    </span>
+                {% endif %}
+            </div>
+        </div>
+    </td>
+</tr>
+{% endif %}

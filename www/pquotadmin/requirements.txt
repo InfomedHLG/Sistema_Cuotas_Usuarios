@@ -1,0 +1,9 @@
+django
+django-crispy-forms
+crispy-bootstrap5
+django-filter
+django-widget-tweaks
+django-template-partials
+django_htmx
+gunicorn
+pymysql

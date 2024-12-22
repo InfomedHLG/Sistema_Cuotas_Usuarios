@@ -1,0 +1,14 @@
+<div class="stat py-2.5 px-1 w-24 text-center tooltip tooltip-bottom before:z-50 before:text-xs hover:bg-base-200/30 transition-colors duration-200" 
+     data-tip="Suma total del consumo actual de todas las instituciones">
+    <div class="stat-title text-[12px] font-medium mb-0.5 opacity-75">Cuota Usada</div>
+    <div class="stat-value text-warning text-sm font-bold">{{ total_used|format_bytes }}</div>
+</div>
+
+<div class="stat py-2.5 px-1 w-24 text-center tooltip tooltip-bottom before:z-50 before:text-xs hover:bg-base-200/30 transition-colors duration-200 border-r border-base-200/50" 
+     data-tip="Suma total de todas las cuotas asignadas a las instituciones">
+    <div class="stat-title text-[12px] font-medium mb-0.5 opacity-75">Cuota Total</div>
+    <div class="stat-value text-success text-sm font-bold">{{ total_quota|format_bytes }}</div>
+</div>
+
+
+

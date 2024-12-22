@@ -1,0 +1,169 @@
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: 'Inter', sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.login-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 20px;
+}
+
+.login-box {
+    background: rgba(255, 255, 255, 0.95);
+    padding: 2.5rem;
+    border-radius: 16px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 420px;
+    backdrop-filter: blur(10px);
+    transition: transform 0.3s ease;
+}
+
+.login-logo {
+    display: block;
+    margin: 0 auto 2rem;
+    max-width: 180px;
+    height: auto;
+}
+
+.input-group {
+    font-size: 1rem;
+    position: relative;
+    --primary: #667eea;
+    margin-bottom: 1.5rem;
+    width: 100%;
+}
+
+.input {
+    all: unset;
+    box-sizing: border-box;
+    width: 100%;
+    color: #4a5568;
+    padding: 1rem;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    transition: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+    background-color: white;
+    display: block;
+}
+
+.label {
+    position: absolute;
+    top: 1rem;
+    left: 1rem;
+    color: #6b7280;
+    pointer-events: none;
+    transition: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+    background-color: white;
+    padding: 0 0.3rem;
+}
+
+.input:focus {
+    border: 1px solid var(--primary);
+}
+
+.input:is(:focus, :valid) ~ label {
+    transform: translateY(-120%) scale(0.7);
+    background-color: white;
+    padding: 0 0.3rem;
+    color: var(--primary);
+}
+
+.password-container {
+    position: relative;
+    width: 100%;
+}
+
+.eye-button {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    padding: 8px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #6b7280;
+    transition: color 0.2s;
+}
+
+.eye-button:hover {
+    color: #4b5563;
+}
+
+.eye-icon {
+    width: 24px;
+    height: 24px;
+    pointer-events: none; /* Importante: permite que los clics pasen al botón */
+    display: block;
+    position: relative;
+    z-index: 5;
+}
+
+.input-password {
+    padding-right: 48px !important;
+}
+
+.login-button {
+    width: 100%;
+    padding: 0.875rem;
+    background: linear-gradient(to right, #667eea, #764ba2);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.login-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2);
+}
+
+.error-message {
+    background-color: rgba(254, 226, 226, 0.9);
+    border-left: 4px solid #ef4444;
+    color: #dc2626;
+    padding: 1rem;
+    border-radius: 8px;
+    margin-bottom: 1.5rem;
+    text-align: center;
+    font-size: 0.95rem;
+    animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes closeEye {
+    0% { transform: scaleY(1); }
+    50% { transform: scaleY(0.1); }
+    100% { transform: scaleY(1); }
+}
+
+.eye-open, .eye-closed {
+    transition: opacity 0.2s;
+}
+
+h2 {
+    text-align: center;
+    margin-bottom: 2rem;
+    color: #1f2937;
+    font-size: 1.75rem;
+    font-weight: 600;
+}
