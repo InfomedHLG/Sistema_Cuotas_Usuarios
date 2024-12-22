@@ -311,8 +311,17 @@ tail -f /var/log/squid/access_cuotas.log
 
 ## 5. 📸 Capturas de Pantalla
 
-<div style="display: flex; gap: 10px;">
+<div style="margin-bottom: 10px; border: 1px solid #ddd; padding: 10px;">
   <img src="img/CuotasLogin.png" alt="Descripción de la imagen 1" title="Pantalla de inicio de sesión" width="100">
+  <p style="text-align: center;">Pantalla de inicio de sesión</p>
+</div>
+
+<div style="margin-bottom: 10px; border: 1px solid #ddd; padding: 10px;">
   <img src="img/CuotasUser.png" alt="Descripción de la imagen 2" title="Pantalla de usuario" width="100">
+  <p style="text-align: center;">Pantalla de usuario</p>
+</div>
+
+<div style="margin-bottom: 10px; border: 1px solid #ddd; padding: 10px;">
   <img src="img/CuotasDetalles.png" alt="Descripción de la imagen 3" title="Detalles de cuotas" width="100">
+  <p style="text-align: center;">Detalles de cuotas</p>
 </div>
