@@ -1,4 +1,4 @@
-# 🦑 Sistema de Cuotas de Navegación Web para Squid Proxy
+# 🦑 Sistema de Cuotas de Navegación Web para Usuarios en Squid Proxy
 
 ## Contenido
 1. [Introducción](#introducción)
