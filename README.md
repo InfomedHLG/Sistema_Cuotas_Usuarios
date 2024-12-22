@@ -311,21 +311,21 @@ tail -f /var/log/squid/access_cuotas.log
 
 ## 5. 📸 Capturas de Pantalla
 
-### Pagina para que el usuario pueda ver su cuota y consumo
+### Página para que el usuario pueda ver su cuota y consumo
 
-<div style="margin-bottom: 10px; border: 1px solid #ddd; padding: 10px;">
-  <img src="img/CuotasLogin.png" alt="Descripción de la imagen 1" title="Pantalla de inicio de sesión" width="150">
-  <p style="text-align: center;">Pantalla de inicio de sesión</p>
+<div style="margin-bottom: 20px; border: 1px solid #ddd; border-radius: 8px; padding: 15px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">
+  <img src="img/CuotasLogin.png" alt="Descripción de la imagen 1" title="Pantalla de inicio de sesión" width="150" style="display: block; margin: 0 auto; border-radius: 8px;">
+  <p style="text-align: center; font-style: italic; color: #555;">Pantalla de inicio de sesión</p>
 </div>
 
-<div style="margin-bottom: 10px; border: 1px solid #ddd; padding: 10px;">
-  <img src="img/CuotasUser.png" alt="Descripción de la imagen 2" title="Pantalla de usuario" width="150">
-  <p style="text-align: center;">Pantalla de usuario</p>
+<div style="margin-bottom: 20px; border: 1px solid #ddd; border-radius: 8px; padding: 15px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">
+  <img src="img/CuotasUser.png" alt="Descripción de la imagen 2" title="Pantalla de usuario" width="150" style="display: block; margin: 0 auto; border-radius: 8px;">
+  <p style="text-align: center; font-style: italic; color: #555;">Pantalla de usuario</p>
 </div>
 
-<div style="margin-bottom: 10px; border: 1px solid #ddd; padding: 10px;">
-  <img src="img/CuotasDetalles.png" alt="Descripción de la imagen 3" title="Detalles de cuotas" width="150">
-  <p style="text-align: center;">Detalles de cuotas</p>
+<div style="margin-bottom: 20px; border: 1px solid #ddd; border-radius: 8px; padding: 15px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">
+  <img src="img/CuotasDetalles.png" alt="Descripción de la imagen 3" title="Detalles de cuotas" width="150" style="display: block; margin: 0 auto; border-radius: 8px;">
+  <p style="text-align: center; font-style: italic; color: #555;">Detalles de cuotas</p>
 </div>
 
 
