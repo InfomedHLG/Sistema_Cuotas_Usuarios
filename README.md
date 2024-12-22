@@ -313,7 +313,7 @@ tail -f /var/log/squid/access_cuotas.log
 
 ### Página para que el usuario pueda ver su cuota y consumo
 
-<div style="display: flex; justify-content: space-around; align-items: center; flex-wrap: wrap;">
+<div style="display: flex; justify-content: space-between; align-items: center;">
   <div style="margin: 10px; text-align: center;">
     <img src="img/CuotasLogin.png" alt="Descripción de la imagen 1" title="Pantalla de inicio de sesión" width="150" style="border-radius: 8px;">
     <p style="font-style: italic; color: #555;">Pantalla de inicio de sesión</p>
