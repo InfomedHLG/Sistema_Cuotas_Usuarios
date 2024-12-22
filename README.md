@@ -333,3 +333,23 @@ tail -f /var/log/squid/access_cuotas.log
 
 ### Pagina de administración de usuarios
   
+<table style="border-collapse: collapse; width: 100%; text-align: center;">
+  <tr>
+    <td style="border: none; padding: 10px;">
+      <img src="img/CuotaAdminLogin.png" alt="Descripción de la imagen 1" title="Pantalla de inicio de sesión" width="150" style="border-radius: 8px;">
+      <p style="font-style: italic; color: #555;">Pantalla de inicio de sesión</p>
+    </td>
+    <td style="border: none; padding: 10px;">
+      <img src="img/CuotaAdminUsers.png" alt="Descripción de la imagen 2" title="Pantalla de usuario" width="150" style="border-radius: 8px;">
+      <p style="font-style: italic; color: #555;">Detalles de usuarios</p>
+    </td>
+    <td style="border: none; padding: 10px;">
+      <img src="img/CuotaAdminEditUser.png" alt="Descripción de la imagen 3" title="Detalles de cuotas" width="150" style="border-radius: 8px;">
+      <p style="font-style: italic; color: #555;">Editar usuario o Eliminar usuario</p>
+    </td>
+    <td style="border: none; padding: 10px;">
+      <img src="img/CuotaAdminResetCuota.png" alt="Descripción de la imagen 3" title="Detalles de cuotas" width="150" style="border-radius: 8px;">
+      <p style="font-style: italic; color: #555;">Resetear cuota o Eliminar cuota</p>
+    </td>    
+  </tr>
+</table>
