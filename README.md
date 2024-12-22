@@ -12,8 +12,7 @@
    - [Instalación del Servidor Web](#instalación-del-servidor-web)
 8. [Tareas de Mantenimiento](#tareas-de-mantenimiento)
 9. [Notas Importantes](#notas-importantes)
-10. [Contribución](#contribución)
-11. [Licencia](#licencia)
+10. [Capturas de Pantalla](#capturas-de-pantalla)
 
 ## Introducción
 Un sistema integral y sofisticado para la gestión y control de cuotas de navegación web, diseñado específicamente para Squid Proxy. Este sistema de cuotas está diseñado para el control del consumo de datos por usuario, con reseteo automático configurable. El sistema incluye un login para que los usuarios puedan autenticarse, ver su cuota y consumo, y acceder a detalles diarios, semanales y anuales.
